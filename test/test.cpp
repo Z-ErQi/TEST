@@ -16,7 +16,7 @@ typedef struct Buffer {
 
 static Buffer buffer;
 static bool isExit = false;
-
+/*
 void writeBuffer(const char *str)
 {
 	unsigned int i = 0;
@@ -49,6 +49,41 @@ void readBuffer(char *str,int len)
 		str[i] = str[len - temp + i];
 		str[len - temp + i] = ' ';
 	}		
+}
+*/
+void writeBuffer(const char *str)
+{
+	char *temp = buffer.data;
+	temp += buffer.head;
+	unsigned int len = 24 - buffer.head;
+	
+	if (len >= strlen(str))
+	{		
+		memcpy(temp, str, strlen(str));
+		buffer.head += strlen(str);
+	}
+	else
+	{
+		memcpy(temp, str, len);
+		const char *temp1 = str + len;
+		memcpy(buffer.data, temp1, strlen(str) - len);
+		buffer.head = strlen(str) - len;
+	}
+}
+
+void readBuffer(char *str,int len)
+{	
+	char *temp = buffer.data , *tempStr = str;
+	if (len > buffer.head)
+	{
+		temp = temp + (24 - len + buffer.head);
+		memcpy(tempStr, temp, len - buffer.head);
+		len = buffer.head;
+		tempStr += len - buffer.head;
+	}
+	temp = temp + buffer.head - len;
+	memcpy(tempStr, temp, len);
+
 }
 
 void __cdecl writeProc(void*)
@@ -115,7 +150,7 @@ int main(int argv,char *argc[]) {
 	_beginthread(readProc1, 0, NULL);
 	_beginthread(readProc2, 0, NULL);
 
-	std::cout << "ÊäÈëexitÍË³ö³ÌÐò" << std::endl;
+	std::cout << "ÃŠÃ¤ÃˆÃ«exitÃÃ‹Â³Ã¶Â³ÃŒÃÃ²" << std::endl;
 	std::string exit;
 	while (1)
 	{
